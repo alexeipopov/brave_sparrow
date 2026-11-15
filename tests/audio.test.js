@@ -1,6 +1,6 @@
 import test, { beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { Sound } from '../src/audio.js';
+import { Sound, MUSIC, COOS } from '../src/audio.js';
 
 class Param {
   constructor(value = 1) { this.value = value; }
@@ -63,13 +63,19 @@ test('mute and pause stop active audio and prevent additional scheduling', async
   assert.ok(sound.context.sources.length - count < 10, 'No burst of missed beats on resume');
 });
 
-test('pigeons have a finite three-syllable waveform and do not coo without enemies', async () => {
+test('pigeons have finite distinct calls and do not coo without enemies', async () => {
   const sound = new Sound(); await sound.unlock(); sound.setPlaying(true);
-  const data = sound.coo.getChannelData(0);
-  assert.ok(data.every(Number.isFinite));
-  assert.ok(data.some(sample => Math.abs(sample) > 0.4));
-  assert.ok(data.every(sample => Math.abs(sample) < 1));
-  assert.equal(data[Math.floor(0.25 * sound.context.sampleRate)], 0);
+  for (const variant of COOS) {
+    const data = sound.coos.get(variant.id).getChannelData(0);
+    assert.ok(data.every(Number.isFinite));
+    assert.ok(data.some(sample => Math.abs(sample) > 0.4));
+    assert.ok(data.every(sample => Math.abs(sample) < 1));
+    for (const [start, duration] of variant.syllables) {
+      const phrase = data.slice(Math.ceil(start * sound.context.sampleRate), Math.floor((start + duration) * sound.context.sampleRate));
+      assert.ok(phrase.some(sample => Math.abs(sample) > 0.4), `${variant.id}: every syllable sounds`);
+    }
+  }
+  assert.equal(new Set([...sound.coos.values()].map(buffer => buffer.duration)).size, COOS.length);
   sound.update(4, []); assert.equal(sound.lastCoo, -Infinity);
   sound.update(4, [{ x: 900, dead: 0, kind: 'normal' }]);
   assert.equal(sound.lastCoo, 0);
@@ -77,6 +83,49 @@ test('pigeons have a finite three-syllable waveform and do not coo without enemi
   sound.pigeon(); assert.equal(sound.context.sources.length, count);
   sound.context.currentTime = 2; sound.pigeon(0, true);
   assert.equal(sound.context.sources.length, count + 1);
+});
+
+test('every music variant completes a distinct loop and switches without keeping the old theme', async () => {
+  const sound = new Sound(); await sound.unlock(); sound.setPlaying(true);
+  const phrases = [];
+  for (const track of MUSIC) {
+    sound.selectMusic(track.id); sound.reset();
+    const start = sound.context.currentTime;
+    const frequencies = [];
+    for (let beat = 0; beat < 64; beat++) {
+      const previous = sound.context.sources.length;
+      sound.update(0, []);
+      const notes = sound.context.sources.slice(previous);
+      assert.ok(notes.length > 0);
+      for (const node of notes) {
+        assert.ok(Number.isFinite(node.started));
+        assert.ok(node.stops[0] > node.started);
+        frequencies.push(node.frequency.value);
+        node.onended();
+      }
+      sound.context.currentTime = sound.nextBeat;
+    }
+    assert.equal(sound.beat, 64);
+    assert.ok(Math.abs(sound.nextBeat - start - 64 * 60 / track.bpm / 2) < 0.03);
+    phrases.push(frequencies.join(','));
+  }
+  assert.equal(new Set(phrases).size, MUSIC.length);
+  sound.update(0, []);
+  const oldVoices = [...sound.voices];
+  sound.selectMusic(MUSIC[0].id);
+  assert.equal(sound.beat, 0);
+  assert.ok(oldVoices.every(voice => voice.source.stops.includes(sound.context.currentTime + 0.04)));
+});
+
+test('saved choices are validated and selected pigeon calls reach playback', async () => {
+  const sound = new Sound();
+  sound.selectMusic('swarm'); sound.selectCoo('leader');
+  sound.selectMusic('outdated-track'); sound.selectCoo(null);
+  assert.equal(sound.musicVariant.id, 'swarm'); assert.equal(sound.cooVariant.id, 'leader');
+  await sound.unlock(); sound.pigeon();
+  assert.equal(sound.context.sources.at(-1).buffer, sound.coos.get('leader'));
+  sound.context.currentTime = 3; sound.selectCoo('flock'); sound.pigeon();
+  assert.equal(sound.context.sources.at(-1).buffer, sound.coos.get('flock'));
 });
 
 test('finished voices disconnect and reset starts a fresh musical phrase', async () => {

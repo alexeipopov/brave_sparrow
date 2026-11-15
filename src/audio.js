@@ -1,25 +1,47 @@
-const EIGHTH = 60 / 104 / 2;
-const MELODY = [
-  72, 0, 76, 79, 76, 74, 72, 0, 76, 79, 81, 79, 76, 0, 74, 0,
-  69, 0, 72, 76, 79, 76, 72, 0, 74, 76, 74, 72, 69, 0, 67, 0,
-  65, 0, 69, 72, 76, 72, 69, 0, 72, 74, 76, 79, 76, 0, 72, 0,
-  67, 0, 71, 74, 77, 74, 71, 0, 74, 76, 74, 71, 72, 0, 0, 0,
+export const MUSIC = [
+  {
+    id: 'defense', title: 'Оборона парка', description: 'Боевой марш · упругие барабаны, тревожные струны', bpm: 132,
+    chords: [[38, 50, 53, 57], [34, 46, 50, 53], [43, 55, 58, 62], [33, 45, 49, 52]],
+    motif: [0, null, 7, 0, 3, null, 7, 10, 12, null, 7, 3, 0, 7, 3, null],
+    bass: [0, 3, 4, 6], kick: [0, 3, 4], snare: [2, 6], cutoff: 1700, sustain: 0.9,
+  },
+  {
+    id: 'swarm', title: 'Налёт стаи', description: 'Погоня · быстрый пульс, резкий бас и короткие сигналы', bpm: 152,
+    chords: [[40, 52, 55, 59], [41, 53, 57, 60], [36, 48, 52, 55], [35, 47, 51, 54]],
+    motif: [0, 12, 7, 12, 1, 12, 7, null, 0, 7, 12, 7, 1, 0, 7, 12],
+    bass: [0, 1, 3, 4, 5, 7], kick: [0, 2, 4, 7], snare: [2, 6], cutoff: 2300, sustain: 0.6,
+  },
+  {
+    id: 'laststand', title: 'Последний рубеж', description: 'Тяжёлая оборона · низкие томы и мрачная мелодия', bpm: 116,
+    chords: [[36, 48, 51, 55], [32, 44, 48, 51], [29, 41, 44, 48], [31, 43, 47, 50]],
+    motif: [0, null, null, 7, 12, null, 10, null, 7, null, 3, null, 1, 0, null, null],
+    bass: [0, 3, 6], kick: [0, 3, 6], snare: [4], cutoff: 1000, sustain: 2.4,
+  },
 ];
-const CHORDS = [[48, 60, 64, 67], [45, 57, 60, 64], [41, 53, 57, 60], [43, 55, 59, 62]];
+export const COOS = [
+  { id: 'sentry', title: 'Дозорный', description: 'Короткое угрожающее «гу-гру-гу»', warble: 22, roughness: 0.04,
+    syllables: [[0, 0.18, 320], [0.25, 0.52, 370], [0.84, 0.3, 280]] },
+  { id: 'flock', title: 'Нервная стая', description: 'Частые перекаты и взволнованная трель', warble: 36, roughness: 0.1,
+    syllables: [[0, 0.13, 400], [0.18, 0.15, 350], [0.38, 0.48, 425], [0.93, 0.2, 330], [1.18, 0.24, 300]] },
+  { id: 'leader', title: 'Вожак', description: 'Низкое хриплое воркование с длинным раскатом', warble: 16, roughness: 0.18,
+    syllables: [[0, 0.28, 250], [0.37, 0.86, 280], [1.33, 0.46, 215]] },
+];
 const hz = note => 440 * 2 ** ((note - 69) / 12);
 
-function cooBuffer(context) {
-  const buffer = context.createBuffer(1, Math.ceil(context.sampleRate * 1.45), context.sampleRate);
+function cooBuffer(context, variant) {
+  const [lastStart, lastDuration] = variant.syllables.at(-1);
+  const buffer = context.createBuffer(1, Math.ceil(context.sampleRate * (lastStart + lastDuration + 0.06)), context.sampleRate);
   const data = buffer.getChannelData(0);
-  // Three breath-shaped syllables with a low, softly warbling throat tone.
-  for (const [start, duration, pitch] of [[0, 0.22, 360], [0.28, 0.57, 405], [0.92, 0.39, 330]]) {
+  for (const [start, duration, pitch] of variant.syllables) {
     let phase = 0;
     for (let i = 0; i < Math.floor(duration * context.sampleRate); i++) {
       const t = i / context.sampleRate, progress = t / duration;
-      const frequency = pitch * (1 - progress * 0.18) + 7 * Math.sin(t * Math.PI * 2 * 22);
+      const trill = Math.sin(t * Math.PI * 2 * variant.warble);
+      const frequency = pitch * (1 - progress * 0.22) + (8 + variant.roughness * 60) * trill;
       phase += frequency * Math.PI * 2 / context.sampleRate;
-      const envelope = Math.sin(Math.PI * progress) ** 0.8 * (0.88 + 0.12 * Math.sin(t * Math.PI * 2 * 28));
-      data[Math.floor(start * context.sampleRate) + i] = envelope * (Math.sin(phase) * 0.68 + Math.sin(phase * 2) * 0.17 + Math.sin(phase * 3) * 0.045);
+      const envelope = Math.sin(Math.PI * progress) ** 0.8 * (0.78 + 0.22 * trill);
+      const throat = Math.sin(phase) * 0.66 + Math.sin(phase * 2) * 0.17 + Math.sin(phase * 3) * 0.06;
+      data[Math.floor(start * context.sampleRate) + i] = envelope * (throat + variant.roughness * Math.sin(phase * 0.5) * trill);
     }
   }
   return buffer;
@@ -28,6 +50,7 @@ function cooBuffer(context) {
 export class Sound {
   constructor() {
     this.context = null; this.enabled = true; this.playing = false;
+    this.musicVariant = MUSIC[0]; this.cooVariant = COOS[0];
     this.voices = new Set(); this.beat = 0; this.nextBeat = 0; this.nextCoo = 2.5; this.lastCoo = -Infinity;
   }
   async unlock() {
@@ -45,13 +68,19 @@ export class Sound {
         this.noise = context.createBuffer(1, context.sampleRate, context.sampleRate);
         const noise = this.noise.getChannelData(0);
         for (let i = 0; i < noise.length; i++) noise[i] = Math.random() * 2 - 1;
-        this.coo = cooBuffer(context);
+        this.coos = new Map(COOS.map(variant => [variant.id, cooBuffer(context, variant)]));
         this.context = context;
       }
       if (this.context.state !== 'running') await this.context.resume();
     } catch { /* A blocked audio device must never prevent playing. */ }
   }
   get audible() { return this.enabled && this.context?.state === 'running'; }
+  selectMusic(id) {
+    const variant = MUSIC.find(item => item.id === id);
+    if (!variant || variant === this.musicVariant) return;
+    this.stopVoices(); this.musicVariant = variant; this.beat = 0;
+  }
+  selectCoo(id) { this.cooVariant = COOS.find(item => item.id === id) || this.cooVariant; }
   stopVoices() {
     if (!this.context) return;
     const now = this.context.currentTime;
@@ -83,12 +112,14 @@ export class Sound {
     source.onended = () => { source.disconnect(); gain.disconnect(); panner.disconnect(); filter?.disconnect(); this.voices.delete(voice); };
     source.start(when); source.stop(when + duration);
   }
-  tone(frequency, duration, type = 'sine', volume = 0.2, end = frequency, when = this.context?.currentTime, destination) {
+  tone(frequency, duration, type = 'sine', volume = 0.2, end = frequency, when = this.context?.currentTime, destination, cutoff = 0) {
     if (!this.audible || this.voices.size >= 48) return;
     const oscillator = this.context.createOscillator(); oscillator.type = type;
     oscillator.frequency.setValueAtTime(frequency, when);
     oscillator.frequency.exponentialRampToValueAtTime(end, when + duration);
-    this.voice(oscillator, duration, volume, when, destination);
+    const filter = cutoff ? this.context.createBiquadFilter() : null;
+    if (filter) { filter.type = 'lowpass'; filter.frequency.value = cutoff; filter.Q.value = 0.6; }
+    this.voice(oscillator, duration, volume, when, destination, filter);
   }
   rustle(duration, volume, frequency, when = this.context?.currentTime, destination) {
     if (!this.audible || this.voices.size >= 48) return;
@@ -99,9 +130,9 @@ export class Sound {
   pigeon(pan = 0, deep = false) {
     if (!this.audible || this.voices.size >= 48 || this.context.currentTime - this.lastCoo < 1.6) return;
     this.lastCoo = this.context.currentTime;
-    const source = this.context.createBufferSource(); source.buffer = this.coo;
+    const source = this.context.createBufferSource(); source.buffer = this.coos.get(this.cooVariant.id);
     source.playbackRate.value = (deep ? 0.8 : 0.96) + Math.random() * 0.1;
-    const duration = this.coo.duration / source.playbackRate.value;
+    const duration = source.buffer.duration / source.playbackRate.value;
     // The buffer already has its own syllable envelopes; keep the phrase audible to its end.
     const gain = this.context.createGain(); gain.gain.value = 0.26;
     const panner = this.context.createStereoPanner(); panner.pan.value = pan;
@@ -127,22 +158,27 @@ export class Sound {
   }
   update(time, enemies) {
     if (!this.audible || !this.playing) return;
-    const now = this.context.currentTime;
+    const now = this.context.currentTime, track = this.musicVariant, eighth = 60 / track.bpm / 2;
     // Schedule against the audio clock, and skip missed beats after a stalled frame.
     if (this.nextBeat < now - 0.1) this.nextBeat = now + 0.02;
     while (this.nextBeat < now + 0.12) {
-      const tick = this.beat % MELODY.length, when = this.nextBeat;
-      const chord = CHORDS[Math.floor(tick / 16)];
-      if (MELODY[tick]) {
-        const f = hz(MELODY[tick]);
-        this.tone(f, 0.25, 'triangle', 0.16, f, when, this.musicGain);
-        this.tone(f * 2, 0.12, 'sine', 0.025, f * 2, when, this.musicGain);
+      const tick = this.beat % 64, when = this.nextBeat, pulse = tick % 8;
+      const chord = track.chords[Math.floor(tick / 16)], note = track.motif[tick % 16];
+      if (note !== null) {
+        const f = hz(chord[1] + 12 + note);
+        this.tone(f, eighth * track.sustain, 'sawtooth', 0.13, f, when, this.musicGain, track.cutoff);
+        this.tone(f, eighth * track.sustain, 'triangle', 0.07, f, when, this.musicGain);
       }
-      if (tick % 4 === 0) this.tone(hz(chord[0]), 0.46, 'sine', 0.3, hz(chord[0]), when, this.musicGain);
-      if (tick % 4 === 2) for (const n of chord.slice(1)) this.tone(hz(n), 0.2, 'triangle', 0.055, hz(n), when, this.musicGain);
-      if (tick % 2 === 0) this.rustle(0.045, 0.055, 5200, when, this.musicGain);
-      if (tick % 8 === 4) this.rustle(0.09, 0.12, 1500, when, this.musicGain);
-      this.beat++; this.nextBeat += EIGHTH;
+      if (track.bass.includes(pulse)) {
+        const bass = hz(chord[0]);
+        this.tone(bass, eighth * 0.85, 'triangle', 0.32, bass, when, this.musicGain);
+      }
+      if (pulse === 0) for (const n of chord.slice(1)) this.tone(hz(n), eighth * 3, 'sawtooth', 0.035, hz(n), when, this.musicGain, 900);
+      if (track.kick.includes(pulse)) this.tone(140, 0.19, 'sine', 0.55, 43, when, this.musicGain);
+      if (track.snare.includes(pulse)) { this.rustle(0.1, 0.24, 1700, when, this.musicGain); this.tone(185, 0.09, 'triangle', 0.1, 90, when, this.musicGain); }
+      this.rustle(0.035, pulse % 2 ? 0.035 : 0.065, 6200, when, this.musicGain);
+      if (tick >= 60 && tick % 2 === 0) this.tone(125 - (tick - 60) * 9, 0.16, 'sine', 0.3, 55, when, this.musicGain);
+      this.beat++; this.nextBeat += eighth;
     }
     if (time >= this.nextCoo) {
       const pigeons = enemies.filter(e => !e.dead && e.x >= 0 && e.x <= 1280);

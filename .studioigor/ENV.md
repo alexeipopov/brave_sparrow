@@ -18,4 +18,4 @@ EDITOR: code .
 - Sandbox Windows требует разрешения на запуск Chrome и запись .git.
 - Запуск доступен на localhost:4173 и в локальной сети по IP компьютера.
 - Реальный iPhone/Android ещё не проверен.
-- Аудиопроверка текущего окружения: node .runtime/audio-check.cjs (живой Web Audio, mute/pause/resume, прямой запуск тренировки).
+- Аудиопроверка текущего окружения: node .runtime/audio-variants.cjs (все темы/голоса, прослушивание, сохранение выбора, mute/pause, отмена отложенного resume, мобильное окно).
