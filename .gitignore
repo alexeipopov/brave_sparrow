@@ -1,4 +1,8 @@
 # >>> studioigor:base
+node_modules/
+dist/
+*.log
+.runtime/
 .DS_Store
 .claude/worktrees/
 .studioigor/captures/

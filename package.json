@@ -1,0 +1,13 @@
+{
+  "name": "brave-sparrow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node tests/model.test.js",
+    "build": "node scripts/build.mjs",
+    "check": "node --check src/main.js && node --check src/model.js && node --check src/render.js && node --check src/input.js && node --check src/audio.js"
+  },
+  "engines": { "node": ">=22" }
+}

@@ -1,11 +1,11 @@
 # studioigor — Храбрый Воробей
 
 PROJECT: Храбрый Воробей
-PHASE: 0 — Start
-UPDATED: 2026-11-15
+PHASE: 4 — Environment
+UPDATED: 2026-11-15 13:48
 
 ## Now
-Project created. Next: phase 1, the idea interview.
+Пользовательский плейтест, ощущение боя и физические мобильные устройства; механики пока не locked.
 
 ## Open questions
 - none
@@ -13,3 +13,4 @@ Project created. Next: phase 1, the idea interview.
 ## Session log
 | date | phase | done | next |
 |---|---|---|---|
+| 2026-11-15 13:48 | 0 — Start | Собрана играбельная браузерная версия по референсу: бесконечные волны Фибоначчи, бой, меню, мультитач, рекорд. Выполнены тесты логики и браузерная проверка. | Пользовательский плейтест, ощущение боя и физические мобильные устройства; механики пока не locked. |

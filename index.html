@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#183e3a">
+  <meta name="description" content="Храбрый Воробей защищает свою скамейку в Преображенском парке Абакана. Бесконечные волны голубей и один очень храбрый клюв.">
+  <title>Храбрый Воробей — переполох в парке</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='50'%3E🐦%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="game" aria-label="Игра Храбрый Воробей">
+    <canvas id="scene" aria-label="Воробей и голуби на дорожке Преображенского парка"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+    <header id="hud" hidden>
+      <div class="health"><span id="hearts" aria-label="Здоровье: 3 из 3">♥ ♥ ♥</span><span class="health-caption">ХРАБРОСТИ ХВАТИТ</span></div>
+      <div class="wave-card"><span id="wave">ВОЛНА 1</span><div class="wave-track"><i id="progress"></i></div><small id="remaining">3 голубя</small></div>
+      <div class="hud-right"><span class="score" title="Побеждено голубей"><span aria-hidden="true">✦</span> <b id="score">0</b></span><button id="sound" class="round-small" aria-label="Выключить звук" title="Звук">♫</button><button id="pause" class="round-small" aria-label="Пауза" title="Пауза (Esc)">Ⅱ</button></div>
+    </header>
+    <div id="announcement" aria-live="polite" hidden><strong></strong><span></span></div>
+    <div id="controls" hidden>
+      <div class="move-controls"><button class="control move" data-action="left" aria-label="Двигаться влево"><span aria-hidden="true">←</span></button><button class="control move" data-action="right" aria-label="Двигаться вправо"><span aria-hidden="true">→</span></button></div>
+      <div class="keyboard-hint">A / D — движение <span>·</span> ПРОБЕЛ — прыжок <span>·</span> J — клюв</div>
+      <div class="action-controls"><button class="control jump" data-action="jump" aria-label="Прыжок"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M7 31C11 19 18 13 33 7L28 24L20 20L14 32Z"/><path d="M12 15L17 10M6 21L10 17" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><small>ПРЫЖОК</small></button><button class="control peck" data-action="attack" aria-label="Удар клювом"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 32L11 16Q16 4 26 12L36 22L23 21L29 27L18 26Z"/><circle cx="22" cy="15" r="2" fill="#8b5619"/></svg><small>КЛЮВ</small></button></div>
+    </div>
+    <section id="menu" class="menu-screen">
+      <div class="menu-copy">
+        <div class="eyebrow"><span></span> АБАКАН · ПРЕОБРАЖЕНСКИЙ ПАРК</div>
+        <h1>ХРАБРЫЙ<br><em>ВОРОБЕЙ</em></h1>
+        <p class="tagline">Маленький герой.<br>Большая птичья разборка.</p>
+        <p class="story">Голуби заняли твою скамейку.<br>Пора показать, кто здесь воробей.</p>
+        <button id="start" class="primary" disabled>Птицы собираются…</button>
+        <div class="menu-bottom"><button id="practice" class="text-button" disabled>Потренироваться ↗</button><span id="record">РЕКОРД: —</span></div>
+        <p class="menu-instructions">Беги. Прыгай. Клюй.<br><span>На клавиатуре: A / D · Пробел · J</span></p>
+      </div>
+      <div class="hero-caption"><i>МАЛ, ДА УДАЛ</i><span>Волн много. Воробей один.</span></div>
+      <span class="edition">ПЕРЕПОЛОХ В ПАРКЕ</span>
+    </section>
+    <section id="pause-screen" class="modal-shade" hidden>
+      <div class="modal"><span class="eyebrow">ВЫДОХНИ, ВОРОБЕЙ</span><h2>Передышка</h2><p>Голуби никуда не денутся.</p><button id="resume" class="primary">Продолжить</button><button id="pause-home" class="text-button">В главное меню</button></div>
+    </section>
+    <section id="result" class="modal-shade" hidden>
+      <div class="modal"><span class="eyebrow">КЛЮВ ВЫШЕ!</span><h2>Ещё полетаем.</h2><p>Сегодня голубей было больше.<br>Но завтра мы вернёмся.</p><div class="result-stats"><div><strong id="result-wave">0</strong><span>ВОЛН ПРОЙДЕНО</span></div><div><strong id="result-kills">0</strong><span>ГОЛУБЕЙ ПРОГНАНО</span></div></div><p id="new-record" hidden>✦ Новый личный рекорд</p><button id="restart" class="primary">Ещё один вылет →</button><button id="result-home" class="text-button">В главное меню</button></div>
+    </section>
+    <aside id="gym" hidden><b>ТРЕНИРОВКА · СЕРДЦА НЕ ТЕРЯЮТСЯ</b><label>Дальность <input id="reach" type="range" min="100" max="190" value="146"></label><label>Пауза клевка <input id="cooldown" type="range" min="0.2" max="0.6" step="0.02" value="0.32"></label><button id="gym-reset" class="text-button">Сбросить</button></aside>
+    <div id="load-error" class="modal-shade" hidden><div class="modal"><h2>Парк пока не загрузился</h2><p>Не удалось загрузить рисунки. Проверь соединение и попробуй снова.</p><button class="primary" onclick="location.reload()">Попробовать ещё раз</button></div></div>
+  </main>
+  <aside id="rotate" role="status"><span aria-hidden="true">↻</span><h2>Поверни телефон</h2><p>Воробью нужен простор.<br>Играй в горизонтальном положении.</p></aside>
+  <noscript>Для игры нужно включить JavaScript в браузере.</noscript>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

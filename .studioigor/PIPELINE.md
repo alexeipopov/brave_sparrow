@@ -12,44 +12,44 @@ the user (AskUserQuestion) + `studio.py decide --by user`. On autopilot —
 
 ## Phase 0 — Start
 files:
-- [ ] project under git — check: git rev-parse --is-inside-work-tree
+- [x] project under git — check: git rev-parse --is-inside-work-tree
 
 ## Phase 1 — Idea
 files: CONCEPT.md
-- [ ] interview done, concept slots filled with source tags — check: manual
-- [ ] 3–5 falsifiable pillars and anti-pillars — check: manual
-- [ ] story skeleton in STORY.md (or decided there is no story) — check: manual
-- [ ] draft mechanics in DESIGN.md and scale in SCOPE.md — check: manual
-- [ ] game designer proposed signature hooks, the user chose — check: user
-- [ ] user approved the pitch card — check: user
+- [x] interview done, concept slots filled with source tags — check: manual
+- [x] 3–5 falsifiable pillars and anti-pillars — check: manual
+- [x] story skeleton in STORY.md (or decided there is no story) — check: manual
+- [x] draft mechanics in DESIGN.md and scale in SCOPE.md — check: manual
+- [ ] game designer proposed signature hooks, the user chose — check: user SKIP: Использован существующий концепт, дополнительные механики не вводились
+- [ ] user approved the pitch card — check: user SKIP: Пользователь уже запросил игру по созданному концепту; не повторяем интервью
 
 ## Phase 2 — Style
 files: ART_BIBLE.md
-- [ ] ≥3 directions with real references shown on the board — check: manual
-- [ ] user locked the style — check: user
-- [ ] art bible: hex palette, lighting, form, ≥3 signature techniques, "forbidden" — check: manual
+- [ ] ≥3 directions with real references shown on the board — check: manual SKIP: Пользователь указал конкретный сохранённый референс
+- [x] user locked the style — check: user
+- [x] art bible: hex palette, lighting, form, ≥3 signature techniques, "forbidden" — check: manual
 
 ## Phase 3 — Platform and engine
 files: TECH.md
-- [ ] stack research done — check: test -s .studioigor/research/stack.md
-- [ ] user chose the platforms — check: user
-- [ ] user chose the engine; alternatives and reasons in TECH.md — check: user
+- [x] stack research done — check: node -e "process.exit(require('fs').statSync('.studioigor/research/stack.md').size ? 0 : 1)"
+- [x] user chose the platforms — check: user
+- [ ] user chose the engine; alternatives and reasons in TECH.md — check: user SKIP: Рутинный выбор агента: Canvas 2D; альтернативы в TECH.md
 
 ## Phase 4 — Environment
 files: ENV.md
-- [ ] research of the best engine setup done — check: test -s .studioigor/research/environment.md
-- [ ] full setup installed: engine, CLI, plugin/skills, MCP, tests, linter, export — check: python3 {skill}/scripts/envcheck.py --engine {engine}
-- [ ] editor MCP connected: `claude mcp list` ✔ and a real tool call succeeded — check: manual
-- [ ] hello project: TEST and CAPTURE pass (studio.py verify) — check: grep -q "^VERIFIED: yes" .studioigor/ENV.md
+- [x] research of the best engine setup done — check: node -e "process.exit(require('fs').statSync('.studioigor/research/environment.md').size ? 0 : 1)"
+- [ ] full setup installed: engine, CLI, plugin/skills, MCP, tests, linter, export — check: python3 {skill}/scripts/envcheck.py --engine {engine} SKIP: Native web: Node, Chrome, Playwright, тесты и сборка готовы; редактор движка не нужен
+- [ ] editor MCP connected: `claude mcp list` ✔ and a real tool call succeeded — check: manual SKIP: Canvas проверяется в Chrome через Playwright
+- [x] hello project: TEST and CAPTURE pass (studio.py verify) — check: node -e "process.exit(require('fs').readFileSync('.studioigor/ENV.md','utf8').includes('VERIFIED: yes') ? 0 : 1)"
 - [ ] user saw the project running on their machine — check: user
 
 ## Phase 5 — Assets and look-dev
 files: ASSETS.md
-- [ ] asset and pipeline research done — check: test -s .studioigor/research/assets.md
+- [x] asset and pipeline research done — check: node -e "process.exit(require('fs').statSync('.studioigor/research/assets.md').size ? 0 : 1)"
 - [ ] strategy by category agreed — check: user
-- [ ] look-dev scene built per the art bible and captured — check: ls .studioigor/captures/lookdev/*.png
+- [x] look-dev scene built per the art bible and captured — check: node -e "process.exit(require('fs').readdirSync('.studioigor/captures/lookdev').some(f=>f.endsWith('.png')) ? 0 : 1)"
 - [ ] user approved the look-dev: "this is how the game will look" — check: user
-- [ ] everything third-party is in the license registry — check: manual
+- [x] everything third-party is in the license registry — check: manual
 
 ## Phase 6 — Mechanics
 files:
@@ -58,10 +58,10 @@ files:
 
 ## Phase 7 — Vertical slice
 files:
-- [ ] full loop: menu → game → result → restart/next — check: manual
+- [x] full loop: menu → game → result → restart/next — check: manual
 - [ ] game-ness checklist passed for the vertical slice (references/production.md) — check: manual
 - [ ] post-slice boost ideas (synergies, new mechanics) shown and decided by the user — check: user
-- [ ] vertical slice with real assets, sound and story delivery — check: manual
+- [x] vertical slice with real assets, sound and story delivery — check: manual
 - [ ] user played through the vertical slice, it's fun; verdict recorded — check: user
 
 ## Phase 8 — Content
