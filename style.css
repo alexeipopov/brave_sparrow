@@ -21,21 +21,21 @@ header{position:absolute;inset:3% 3% auto;display:flex;justify-content:space-bet
 @media(max-height:400px){#audio-settings{padding:16px 22px}.audio-heading h2{font-size:24px;margin-bottom:12px}.audio-options p{margin:7px 0;min-height:34px}.audio-hint{margin-top:12px}}
 @media(max-width:480px){.audio-options{grid-template-columns:1fr;gap:16px}.audio-options p{min-height:0}.audio-heading h2{font-size:23px}}
 
-#commentator{--peek-x:-125%;position:absolute;z-index:9;display:flex;align-items:center;gap:0;width:max-content;max-width:44%;pointer-events:none;filter:drop-shadow(0 3px 4px #102e3266)}
+#commentator{--peek-x:-150%;--peek-angle:20deg;position:absolute;z-index:9;display:flex;align-items:center;gap:0;width:max-content;max-width:44%;pointer-events:none;filter:drop-shadow(0 3px 4px #102e3266)}
 #commentator[data-corner^=top]{top:15%}#commentator[data-corner^=bottom]{bottom:24%}
 #result:not([hidden])~#commentator[data-corner^=top]{top:2%}#result:not([hidden])~#commentator[data-corner^=bottom]{bottom:2%}
-#commentator[data-corner$=left]{left:1.5%}#commentator[data-corner$=right]{--peek-x:125%;right:1.5%;flex-direction:row-reverse}
-.puppet{position:relative;width:clamp(80px,15cqw,210px);aspect-ratio:1;flex-shrink:0;animation:puppet-peek .45s cubic-bezier(.2,.8,.2,1) both}
+#commentator[data-corner$=left]{left:1.5%}#commentator[data-corner$=right]{--peek-x:150%;--peek-angle:-20deg;right:1.5%;flex-direction:row-reverse}
+.puppet{position:relative;width:clamp(80px,15cqw,210px);aspect-ratio:1;flex-shrink:0;transform:rotate(var(--peek-angle));animation:puppet-peek 3s linear both}
 .puppet img{position:absolute;inset:0;width:100%;height:100%}
 /* Both clips meet along the photographed lips; only the lower lip and chin move. */
 .puppet-face{clip-path:polygon(0 0,100% 0,100% 100%,60% 100%,54% 73.4%,32% 73.4%,31% 100%,0 100%)}
 .puppet-mouth,.puppet-jaw{clip-path:polygon(32% 73.4%,54% 73.4%,60% 100%,31% 100%)}
-.puppet-jaw{animation:puppet-talk .32s .45s infinite}
+.puppet-jaw{animation:puppet-talk .3s .45s 7 forwards}
 .puppet-mouth{filter:brightness(0)}
-.speech-bubble{position:relative;margin:0;padding:clamp(8px,1.1cqw,16px);max-width:clamp(130px,20cqw,270px);border:2px solid #49331d;border-radius:16px;background:var(--cream);color:#49331d;font-size:clamp(12px,1.65cqw,23px);font-weight:900;line-height:1.25;text-align:center;animation:puppet-caption .12s .45s both}
+.speech-bubble{position:relative;margin:0;padding:clamp(8px,1.1cqw,16px);max-width:clamp(130px,20cqw,270px);border:2px solid #49331d;border-radius:16px;background:var(--cream);color:#49331d;font-size:clamp(12px,1.65cqw,23px);font-weight:900;line-height:1.25;text-align:center;animation:puppet-caption 3s linear both}
 .speech-bubble::before{content:'';position:absolute;left:-8px;top:55%;width:12px;height:12px;background:var(--cream);border-left:2px solid #49331d;border-bottom:2px solid #49331d;transform:rotate(45deg)}
 #commentator[data-corner$=right] .speech-bubble::before{left:auto;right:-8px;transform:rotate(225deg)}
 @keyframes puppet-talk{0%,100%{transform:translateY(0)}25%,65%{transform:translateY(4%)}45%{transform:translateY(1%)}}
-@keyframes puppet-peek{from{transform:translateX(var(--peek-x))}to{transform:translateX(0)}}
-@keyframes puppet-caption{from{opacity:0;visibility:hidden}to{opacity:1;visibility:visible}}
-@media(prefers-reduced-motion:reduce){.puppet,.puppet-jaw{animation:none}.speech-bubble{animation-duration:0s}}
+@keyframes puppet-peek{0%{transform:translateX(var(--peek-x)) rotate(var(--peek-angle));animation-timing-function:cubic-bezier(.2,.8,.2,1)}15%,85%{transform:translateX(0) rotate(var(--peek-angle));animation-timing-function:cubic-bezier(.8,0,.8,.2)}100%{transform:translateX(var(--peek-x)) rotate(var(--peek-angle))}}
+@keyframes puppet-caption{0%,15%,85%,100%{opacity:0;visibility:hidden}19%,83%{opacity:1;visibility:visible}}
+@media(prefers-reduced-motion:reduce){.puppet,.puppet-jaw{animation:none}}
