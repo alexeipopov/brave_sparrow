@@ -20,3 +20,20 @@ header{position:absolute;inset:3% 3% auto;display:flex;justify-content:space-bet
 #audio-settings{width:min(680px,94vw);max-height:94dvh;overflow:auto;margin:auto;padding:24px 28px;border:1px solid #cfce9880;border-radius:24px;background:#174e48;color:var(--cream);box-shadow:0 22px 80px #092b2a66;touch-action:pan-y}#audio-settings::backdrop{background:#153b32cf;backdrop-filter:blur(6px)}.audio-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}.audio-heading h2{font-size:28px;margin:6px 0 18px}.audio-heading .eyebrow{font-size:10px}.audio-close{align-self:flex-start;width:44px;height:44px;border:1px solid #fff0ce66;border-radius:50%;background:transparent;color:var(--cream);font-size:28px}.audio-options{display:grid;grid-template-columns:1fr 1fr;gap:24px}.audio-options label{display:block;font-size:12px;letter-spacing:1px;margin-bottom:8px;color:#e5dcb3}.audio-options select{width:100%;min-height:44px;padding:8px;border:1px solid #cfce9899;border-radius:9px;background:#123d38;color:var(--cream);font:inherit;font-size:15px}.audio-options select:focus-visible{outline:3px solid white;outline-offset:3px}.audio-options p{min-height:42px;font-size:12px;color:#d6e1cb;margin:10px 0}.audio-listen{width:100%;min-height:44px;padding:9px;border:1px solid #ffe1a0;border-radius:10px;background:#efbb58;color:#49331d;font-weight:700;font-size:13px}.audio-listen[aria-pressed=true]{background:#f8dca2}.audio-hint{font-size:11px;line-height:1.4;color:#d6e1cb;margin:18px 0 0}
 @media(max-height:400px){#audio-settings{padding:16px 22px}.audio-heading h2{font-size:24px;margin-bottom:12px}.audio-options p{margin:7px 0;min-height:34px}.audio-hint{margin-top:12px}}
 @media(max-width:480px){.audio-options{grid-template-columns:1fr;gap:16px}.audio-options p{min-height:0}.audio-heading h2{font-size:23px}}
+
+#commentator{position:absolute;z-index:9;display:flex;align-items:center;gap:0;width:max-content;max-width:44%;pointer-events:none;filter:drop-shadow(0 3px 4px #102e3266)}
+#commentator[data-corner^=top]{top:15%}#commentator[data-corner^=bottom]{bottom:24%}
+#result:not([hidden])~#commentator[data-corner^=top]{top:2%}#result:not([hidden])~#commentator[data-corner^=bottom]{bottom:2%}
+#commentator[data-corner$=left]{left:1.5%}#commentator[data-corner$=right]{right:1.5%;flex-direction:row-reverse}
+.puppet{position:relative;width:clamp(80px,15cqw,210px);aspect-ratio:1;flex-shrink:0}
+.puppet img{position:absolute;inset:0;width:100%;height:100%}
+/* Both clips meet along the photographed lips; only the lower lip and chin move. */
+.puppet-face{clip-path:polygon(0 0,100% 0,100% 100%,60% 100%,54% 73.4%,32% 73.4%,31% 100%,0 100%)}
+.puppet-mouth,.puppet-jaw{clip-path:polygon(32% 73.4%,54% 73.4%,60% 100%,31% 100%)}
+.puppet-jaw{animation:puppet-talk .32s infinite}
+.puppet-mouth{filter:brightness(0)}
+.speech-bubble{position:relative;margin:0;padding:clamp(8px,1.1cqw,16px);max-width:clamp(130px,20cqw,270px);border:2px solid #49331d;border-radius:16px;background:var(--cream);color:#49331d;font-size:clamp(12px,1.65cqw,23px);font-weight:900;line-height:1.25;text-align:center}
+.speech-bubble::before{content:'';position:absolute;left:-8px;top:55%;width:12px;height:12px;background:var(--cream);border-left:2px solid #49331d;border-bottom:2px solid #49331d;transform:rotate(45deg)}
+#commentator[data-corner$=right] .speech-bubble::before{left:auto;right:-8px;transform:rotate(225deg)}
+@keyframes puppet-talk{0%,100%{transform:translateY(0)}25%,65%{transform:translateY(4%)}45%{transform:translateY(1%)}}
+@media(prefers-reduced-motion:reduce){.puppet-jaw{animation:none}}

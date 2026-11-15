@@ -14,6 +14,19 @@ const portrait = matchMedia('(orientation: portrait)');
 const count = value => value.toLocaleString('ru-RU');
 let lastHud = '', announcement = '', lastSave = '';
 let musicPreview = false, previewRequest = 0;
+let commentaryTimer;
+function hideCommentary() {
+  clearTimeout(commentaryTimer);
+  $('commentator').hidden = true;
+}
+function showCommentary(type) {
+  hideCommentary();
+  $('commentator-line').textContent = type === 'clear' ? 'Андрющ, красава' : 'Ну Анрющ, подвел пацанов';
+  $('commentator').dataset.corner = ['top-left', 'top-right', 'bottom-left', 'bottom-right'][Math.floor(Math.random() * 4)];
+  $('commentator').hidden = false;
+  // Wall-clock time keeps the cameo short even after the game simulation stops.
+  commentaryTimer = setTimeout(hideCommentary, 3000);
+}
 try {
   const saved = JSON.parse(localStorage.getItem('brave-sparrow-audio'));
   sound.selectMusic(saved?.music); sound.selectCoo(saved?.coo);
@@ -66,10 +79,11 @@ function show(next) {
   $('hud').hidden = next === 'menu';
   $('controls').hidden = next !== 'playing';
   if (next !== 'playing') $('announcement').hidden = true;
-  if (next === 'menu') recordLabel();
+  if (next === 'menu') { hideCommentary(); recordLabel(); }
 }
 function start() {
   if (!ready || portrait.matches) return;
+  hideCommentary();
   sound.unlock();
   game = createGame();
   renderer.particles.length = 0;
@@ -160,6 +174,7 @@ function frame(time) {
     for (const event of game.events) {
       if (event.type !== 'over') sound.play(event.type);
       if (event.type === 'clear') updateRecord();
+      if (event.type === 'clear' || event.type === 'over') showCommentary(event.type);
     }
     game.events.length = 0;
     hud();
@@ -171,6 +186,7 @@ function frame(time) {
 }
 try {
   renderer = new Renderer($('scene'), await loadArt());
+  await $('commentator-photo').decode();
   ready = true;
   $('start').disabled = false;
   $('start').textContent = 'Защитить скамейку →';

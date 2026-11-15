@@ -43,6 +43,14 @@
     <section id="result" class="modal-shade" hidden>
       <div class="modal"><span class="eyebrow">КЛЮВ ВЫШЕ!</span><h2>Ещё полетаем.</h2><p>Сегодня голубей было больше.<br>Но завтра мы вернёмся.</p><div class="result-stats"><div><strong id="result-wave">0</strong><span>ВОЛН ПРОЙДЕНО</span></div><div><strong id="result-kills">0</strong><span>ГОЛУБЕЙ ПРОГНАНО</span></div></div><p id="new-record" hidden>✦ Новый личный рекорд</p><button id="restart" class="primary">Ещё один вылет →</button><button id="result-home" class="text-button">В главное меню</button></div>
     </section>
+    <aside id="commentator" role="status" aria-live="polite" aria-atomic="true" hidden>
+      <div class="puppet" aria-hidden="true">
+        <img class="puppet-mouth" src="./assets/commentator.png" alt="">
+        <img id="commentator-photo" class="puppet-face" src="./assets/commentator.png" alt="">
+        <img class="puppet-jaw" src="./assets/commentator.png" alt="">
+      </div>
+      <p id="commentator-line" class="speech-bubble"></p>
+    </aside>
     <div id="load-error" class="modal-shade" hidden><div class="modal"><h2>Парк пока не загрузился</h2><p>Не удалось загрузить рисунки. Проверь соединение и попробуй снова.</p><button class="primary" onclick="location.reload()">Попробовать ещё раз</button></div></div>
   </main>
   <dialog id="audio-settings" aria-labelledby="audio-title">
