@@ -2,7 +2,6 @@ import { createGame, step, parseRecord, bestRecord } from './model.js';
 import { Renderer, loadArt } from './render.js';
 import { createInput } from './input.js';
 import { Sound, MUSIC, COOS } from './audio.js';
-import { TUNING } from './config.js';
 
 const $ = id => document.getElementById(id);
 const sound = new Sound();
@@ -12,7 +11,6 @@ let record;
 try { record = parseRecord(localStorage.getItem('brave-sparrow-record')); } catch { record = parseRecord(null); }
 const input = createInput(() => { if (!$('audio-settings').open) screen === 'playing' ? pause() : screen === 'paused' && resume(); });
 const portrait = matchMedia('(orientation: portrait)');
-const defaultTuning = { reach: TUNING.peckReach, cooldown: TUNING.peckCooldown };
 const count = value => value.toLocaleString('ru-RU');
 let lastHud = '', announcement = '', lastSave = '';
 let musicPreview = false, previewRequest = 0;
@@ -51,7 +49,6 @@ async function previewReady(request) {
 }
 
 function updateRecord() {
-  if (game.practice) return;
   const next = bestRecord(record, game);
   record = next;
   const data = JSON.stringify({ version: 1, wave: record.wave, kills: String(record.kills) });
@@ -68,19 +65,16 @@ function show(next) {
   $('result').hidden = next !== 'over';
   $('hud').hidden = next === 'menu';
   $('controls').hidden = next !== 'playing';
-  $('gym').hidden = !game.practice || next !== 'playing';
   if (next !== 'playing') $('announcement').hidden = true;
   if (next === 'menu') recordLabel();
 }
-function start(practice = false) {
+function start() {
   if (!ready || portrait.matches) return;
   sound.unlock();
-  game = createGame(practice);
+  game = createGame();
   renderer.particles.length = 0;
   sound.reset();
   lastHud = ''; announcement = '';
-  TUNING.peckReach = defaultTuning.reach; TUNING.peckCooldown = defaultTuning.cooldown;
-  $('reach').value = TUNING.peckReach; $('cooldown').value = TUNING.peckCooldown;
   show('playing');
   hud();
   document.activeElement?.blur();
@@ -90,7 +84,7 @@ function resume() {
   if (screen !== 'paused' || portrait.matches || document.hidden) return;
   sound.unlock(); show('playing'); document.activeElement?.blur();
 }
-function home() { if (!game.practice) updateRecord(); show('menu'); $('start').focus({ preventScroll: true }); }
+function home() { updateRecord(); show('menu'); $('start').focus({ preventScroll: true }); }
 function gameOver() {
   const previous = record;
   updateRecord();
@@ -123,13 +117,11 @@ function hud() {
 }
 
 $('start').addEventListener('click', () => start());
-$('practice').addEventListener('click', () => start(true));
-$('restart').addEventListener('click', () => start(game.practice));
+$('restart').addEventListener('click', () => start());
 $('pause').addEventListener('click', pause);
 $('resume').addEventListener('click', resume);
 $('pause-home').addEventListener('click', home);
 $('result-home').addEventListener('click', home);
-$('gym-reset').addEventListener('click', () => start(true));
 $('sound').addEventListener('click', toggleSound);
 $('menu-audio').addEventListener('click', openAudio);
 $('pause-audio').addEventListener('click', openAudio);
@@ -146,11 +138,9 @@ $('preview-music').addEventListener('click', async () => {
   if (musicPreview) { sound.reset(); sound.setPlaying(true); }
 });
 $('preview-coo').addEventListener('click', async () => { if (await previewReady(previewRequest)) { sound.lastCoo = -Infinity; sound.pigeon(); } });
-// A direct training URL or mobile audio interruption may need another user gesture.
+// A mobile audio interruption may need another user gesture.
 $('game').addEventListener('pointerdown', () => { if (screen === 'playing') sound.unlock(); });
 window.addEventListener('keydown', () => { if (screen === 'playing') sound.unlock(); });
-$('reach').addEventListener('input', e => { TUNING.peckReach = Number(e.target.value); });
-$('cooldown').addEventListener('input', e => { TUNING.peckCooldown = Number(e.target.value); });
 function interruptAudio() { pause(); if ($('audio-settings').open) stopPreview(); }
 window.addEventListener('blur', interruptAudio);
 document.addEventListener('visibilitychange', () => { if (document.hidden) interruptAudio(); });
@@ -169,7 +159,7 @@ function frame(time) {
     renderer.effects(game.events);
     for (const event of game.events) {
       if (event.type !== 'over') sound.play(event.type);
-      if (event.type === 'clear' && !game.practice) updateRecord();
+      if (event.type === 'clear') updateRecord();
     }
     game.events.length = 0;
     hud();
@@ -182,8 +172,7 @@ function frame(time) {
 try {
   renderer = new Renderer($('scene'), await loadArt());
   ready = true;
-  $('start').disabled = false; $('practice').disabled = false;
+  $('start').disabled = false;
   $('start').textContent = 'Защитить скамейку →';
   requestAnimationFrame(frame);
-  if (new URLSearchParams(location.search).has('gym')) start(true);
 } catch (error) { console.error('Не удалось загрузить игру:', error); $('load-error').hidden = false; }

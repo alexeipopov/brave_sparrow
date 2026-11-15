@@ -7,9 +7,9 @@ export function waveCount(wave) {
   return current;
 }
 
-export function createGame(practice = false) {
+export function createGame() {
   return {
-    practice, phase: 'break', time: 0, wave: 1, completed: 0,
+    phase: 'break', time: 0, wave: 1, completed: 0,
     previous: 2n, total: 3n, spawned: 0n, defeated: 0n, kills: 0n,
     breakLeft: 1.8, spawnTimer: 0.2, nextId: 1, enemies: [], events: [],
     player: { x: WORLD.width / 2, y: 0, vy: 0, dir: 1, hp: 3, cooldown: 0, attack: 0, invulnerable: 0, moving: false },
@@ -58,7 +58,7 @@ export function peck(game) {
 export function hurtPlayer(game, direction) {
   const p = game.player;
   if (p.invulnerable > 0 || game.phase !== 'combat') return;
-  if (!game.practice) p.hp--;
+  p.hp--;
   p.invulnerable = TUNING.invulnerability;
   p.x = Math.max(65, Math.min(WORLD.width - 65, p.x + direction * 32));
   game.events.push({ type: 'hurt', x: p.x, y: p.y + 70 });

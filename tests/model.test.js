@@ -42,7 +42,8 @@ test('a jump leaves the ground and returns, player stays inside arena', () => {
 });
 
 test('crowds are bounded while full wave totals stay unchanged', () => {
-  const game = createGame(true); game.phase = 'combat'; game.wave = 30; game.total = waveCount(30);
+  const game = createGame(); game.phase = 'combat'; game.wave = 30; game.total = waveCount(30);
+  game.player.invulnerable = 60;
   for (let i = 0; i < 1800; i++) { step(game, {}, 1 / 60); game.events.length = 0; }
   assert.equal(game.enemies.filter(e => !e.dead).length, 4);
   assert.equal(game.total, waveCount(30));

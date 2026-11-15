@@ -27,12 +27,11 @@
     <section id="menu" class="menu-screen">
       <button id="menu-audio" class="audio-open" aria-haspopup="dialog">♫ Звук и музыка</button>
       <div class="menu-copy">
-        <div class="eyebrow"><span></span> АБАКАН · ПРЕОБРАЖЕНСКИЙ ПАРК</div>
         <h1>ХРАБРЫЙ<br><em>ВОРОБЕЙ</em></h1>
         <p class="tagline">Маленький герой.<br>Большая птичья разборка.</p>
         <p class="story">Голуби заняли твою скамейку.<br>Пора показать, кто здесь воробей.</p>
         <button id="start" class="primary" disabled>Птицы собираются…</button>
-        <div class="menu-bottom"><button id="practice" class="text-button" disabled>Потренироваться ↗</button><span id="record">РЕКОРД: —</span></div>
+        <div class="menu-bottom"><span id="record">РЕКОРД: —</span></div>
         <p class="menu-instructions">Беги. Прыгай. Клюй.<br><span>На клавиатуре: A / D · Пробел · J</span></p>
       </div>
       <div class="hero-caption"><i>МАЛ, ДА УДАЛ</i><span>Волн много. Воробей один.</span></div>
@@ -44,7 +43,6 @@
     <section id="result" class="modal-shade" hidden>
       <div class="modal"><span class="eyebrow">КЛЮВ ВЫШЕ!</span><h2>Ещё полетаем.</h2><p>Сегодня голубей было больше.<br>Но завтра мы вернёмся.</p><div class="result-stats"><div><strong id="result-wave">0</strong><span>ВОЛН ПРОЙДЕНО</span></div><div><strong id="result-kills">0</strong><span>ГОЛУБЕЙ ПРОГНАНО</span></div></div><p id="new-record" hidden>✦ Новый личный рекорд</p><button id="restart" class="primary">Ещё один вылет →</button><button id="result-home" class="text-button">В главное меню</button></div>
     </section>
-    <aside id="gym" hidden><b>ТРЕНИРОВКА · СЕРДЦА НЕ ТЕРЯЮТСЯ</b><label>Дальность <input id="reach" type="range" min="100" max="190" value="146"></label><label>Пауза клевка <input id="cooldown" type="range" min="0.2" max="0.6" step="0.02" value="0.32"></label><button id="gym-reset" class="text-button">Сбросить</button></aside>
     <div id="load-error" class="modal-shade" hidden><div class="modal"><h2>Парк пока не загрузился</h2><p>Не удалось загрузить рисунки. Проверь соединение и попробуй снова.</p><button class="primary" onclick="location.reload()">Попробовать ещё раз</button></div></div>
   </main>
   <dialog id="audio-settings" aria-labelledby="audio-title">
