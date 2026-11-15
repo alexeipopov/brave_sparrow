@@ -24,6 +24,7 @@ function showCommentary(type) {
   $('commentator-line').textContent = type === 'clear' ? 'Андрющ, красава' : 'Ну Анрющ, подвел пацанов';
   $('commentator').dataset.corner = ['top-left', 'top-right', 'bottom-left', 'bottom-right'][Math.floor(Math.random() * 4)];
   $('commentator').hidden = false;
+  for (const animation of $('commentator').getAnimations({ subtree: true })) animation.currentTime = 0;
   // Wall-clock time keeps the cameo short even after the game simulation stops.
   commentaryTimer = setTimeout(hideCommentary, 3000);
 }
