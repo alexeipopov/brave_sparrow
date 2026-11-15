@@ -41,7 +41,7 @@ files: ENV.md
 - [ ] full setup installed: engine, CLI, plugin/skills, MCP, tests, linter, export — check: python3 {skill}/scripts/envcheck.py --engine {engine} SKIP: Native web: Node, Chrome, Playwright, тесты и сборка готовы; редактор движка не нужен
 - [ ] editor MCP connected: `claude mcp list` ✔ and a real tool call succeeded — check: manual SKIP: Canvas проверяется в Chrome через Playwright
 - [x] hello project: TEST and CAPTURE pass (studio.py verify) — check: node -e "process.exit(require('fs').readFileSync('.studioigor/ENV.md','utf8').includes('VERIFIED: yes') ? 0 : 1)"
-- [ ] user saw the project running on their machine — check: user
+- [x] user saw the project running on their machine — check: user
 
 ## Phase 5 — Assets and look-dev
 files: ASSETS.md
