@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node scripts/serve.mjs",
-    "test": "node tests/model.test.js",
+    "test": "node tests/model.test.js && node tests/audio.test.js",
     "build": "node scripts/build.mjs",
     "check": "node --check src/main.js && node --check src/model.js && node --check src/render.js && node --check src/input.js && node --check src/audio.js"
   },

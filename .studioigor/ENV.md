@@ -9,7 +9,7 @@ VERIFIED: yes
 - Native Canvas/WebAudio не требует редактора игрового движка или его MCP.
 ## Commands
 RUN: node scripts/serve.mjs
-TEST: node tests/model.test.js
+TEST: npm.cmd test
 BUILD: node scripts/build.mjs
 CAPTURE: node .runtime/browser-check.cjs
 EDITOR: code .
@@ -18,3 +18,4 @@ EDITOR: code .
 - Sandbox Windows требует разрешения на запуск Chrome и запись .git.
 - Запуск доступен на localhost:4173 и в локальной сети по IP компьютера.
 - Реальный iPhone/Android ещё не проверен.
+- Аудиопроверка текущего окружения: node .runtime/audio-check.cjs (живой Web Audio, mute/pause/resume, прямой запуск тренировки).

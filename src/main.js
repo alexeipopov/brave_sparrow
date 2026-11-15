@@ -6,6 +6,7 @@ import { TUNING } from './config.js';
 
 const $ = id => document.getElementById(id);
 const sound = new Sound();
+$('sound').setAttribute('aria-pressed', 'true');
 let game = createGame(), screen = 'menu', renderer, ready = false;
 let record;
 try { record = parseRecord(localStorage.getItem('brave-sparrow-record')); } catch { record = parseRecord(null); }
@@ -26,6 +27,7 @@ function updateRecord() {
 function recordLabel() { $('record').textContent = record.kills > 0n ? `РЕКОРД: ${record.wave} ВОЛН · ${count(record.kills)} ✦` : 'ПЕРВЫЙ ВЫЛЕТ?'; }
 function show(next) {
   screen = next;
+  sound.setPlaying(next === 'playing');
   input.clear();
   $('menu').hidden = next !== 'menu';
   $('pause-screen').hidden = next !== 'paused';
@@ -41,7 +43,7 @@ function start(practice = false) {
   sound.unlock();
   game = createGame(practice);
   renderer.particles.length = 0;
-  sound.nextNote = 0;
+  sound.reset();
   lastHud = ''; announcement = '';
   TUNING.peckReach = defaultTuning.reach; TUNING.peckCooldown = defaultTuning.cooldown;
   $('reach').value = TUNING.peckReach; $('cooldown').value = TUNING.peckCooldown;
@@ -61,7 +63,7 @@ function gameOver() {
   $('result-wave').textContent = game.completed;
   $('result-kills').textContent = count(game.kills);
   $('new-record').hidden = record === previous;
-  show('over'); $('restart').focus({ preventScroll: true });
+  show('over'); sound.play('over'); $('restart').focus({ preventScroll: true });
 }
 function hud() {
   const key = `${game.player.hp}:${game.wave}:${game.defeated}:${game.kills}:${game.phase}`;
@@ -98,7 +100,11 @@ $('sound').addEventListener('click', () => {
   sound.unlock(); const enabled = sound.toggle();
   $('sound').textContent = enabled ? '♫' : '♪̸';
   $('sound').setAttribute('aria-label', enabled ? 'Выключить звук' : 'Включить звук');
+  $('sound').setAttribute('aria-pressed', String(enabled));
 });
+// A direct training URL or mobile audio interruption may need another user gesture.
+$('game').addEventListener('pointerdown', () => { if (screen === 'playing') sound.unlock(); });
+window.addEventListener('keydown', () => { if (screen === 'playing') sound.unlock(); });
 $('reach').addEventListener('input', e => { TUNING.peckReach = Number(e.target.value); });
 $('cooldown').addEventListener('input', e => { TUNING.peckCooldown = Number(e.target.value); });
 window.addEventListener('blur', pause);
@@ -117,13 +123,13 @@ function frame(time) {
     while (accumulator >= 1 / 60) { step(game, held, 1 / 60); accumulator -= 1 / 60; }
     renderer.effects(game.events);
     for (const event of game.events) {
-      sound.play(event.type);
+      if (event.type !== 'over') sound.play(event.type);
       if (event.type === 'clear' && !game.practice) updateRecord();
     }
     game.events.length = 0;
     hud();
     if (game.phase === 'over') gameOver();
-    else sound.music(game.time);
+    else sound.update(game.time, game.enemies);
   } else { accumulator = 0; if (screen === 'menu') game.time += dt; }
   renderer.draw(game, screen === 'playing' || screen === 'menu' ? dt : 0, screen === 'menu');
   requestAnimationFrame(frame);
