@@ -46,6 +46,7 @@ changes files. Work on the task and return the contract from your role.
 - Commit at every step (a decision, closed gates, a locked mechanic):
   `python3 C:\Users\alexei\.codex\skills\studioigor/scripts/studio.py commit "…"`.
 - Never push or publish unless the user asked for it.
+- Changes to `main` must go through a pull request approved by `@alexeipopov`; never push directly, self-approve, or bypass protection. Work on a `codex/` branch.
 - Subagents that change files work in a git worktree (`isolation: "worktree"`).
   The lead reviews the diff, merges one at a time and checks the game after each merge.
   `.claude/worktrees/` must be in .gitignore. The procedure is in `C:\Users\alexei\.codex\skills\studioigor/references/team.md`.

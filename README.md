@@ -26,4 +26,6 @@ npm run build
 ```
 
 Готовая статическая сборка — `dist/`. Запуск сборки: `node scripts/serve.mjs --dist`.
+Публикация на GitHub Pages: в Settings → Pages выбрать Source → GitHub Actions. Workflow `.github/workflows/pages.yml` проверяет PR и публикует только `dist/` после слияния в `main`; его также можно запустить вручную из `main`.
+Защита `main`: импортировать `.github/main-ruleset.json` в Settings → Rules → Rulesets. Правила требуют PR, один апрув владельца кода, сброс апрува после новых коммитов и закрытие обсуждений; обход, force push и удаление запрещены. `CODEOWNERS` назначает `@alexeipopov` владельцем всех файлов после слияния этого файла в `main`. Сам файл правил не включает защиту на GitHub. Агенту нужен отдельный GitHub-аккаунт, чтобы `@alexeipopov` мог одобрять его PR: автор не может одобрить свой PR.
 Технические решения и состояние studioigor — `.studioigor/`. Исходный концепт — `references/`; игровые рисунки и их промпты — `assets/`.
