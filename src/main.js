@@ -18,10 +18,12 @@ let commentaryTimer;
 function hideCommentary() {
   clearTimeout(commentaryTimer);
   $('commentator').hidden = true;
+  $('commentator-status').textContent = '';
 }
 function showCommentary(type) {
   hideCommentary();
   $('commentator-line').textContent = type === 'clear' ? 'Андрющ, красава' : 'Ну Анрющ, подвел пацанов';
+  $('commentator-status').textContent = $('commentator-line').textContent;
   $('commentator').dataset.corner = ['top-left', 'top-right', 'bottom-left', 'bottom-right'][Math.floor(Math.random() * 4)];
   $('commentator').hidden = false;
   for (const animation of $('commentator').getAnimations({ subtree: true })) animation.currentTime = 0;
