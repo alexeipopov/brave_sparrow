@@ -50,7 +50,7 @@ function cooBuffer(context, variant) {
 export class Sound {
   constructor() {
     this.context = null; this.enabled = true; this.playing = false;
-    this.musicVariant = MUSIC[0]; this.cooVariant = COOS[0];
+    this.musicVariant = MUSIC.find(track => track.id === 'swarm'); this.cooVariant = COOS[0];
     this.voices = new Set(); this.beat = 0; this.nextBeat = 0; this.nextCoo = 2.5; this.lastCoo = -Infinity;
   }
   async unlock() {

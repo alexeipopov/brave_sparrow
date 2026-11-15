@@ -57,10 +57,11 @@ test('mute and pause stop active audio and prevent additional scheduling', async
   sound.setPlaying(true); sound.toggle(); sound.play('hit'); sound.update(11, []);
   assert.equal(sound.context.sources.length, count);
   assert.equal(sound.gain.gain.value, 0);
+  const beatBeforeResume = sound.beat;
   sound.toggle(); sound.update(12, []);
   sound.context.currentTime += 0.3; sound.update(12.3, []);
   assert.ok(sound.context.sources.length > count);
-  assert.ok(sound.context.sources.length - count < 10, 'No burst of missed beats on resume');
+  assert.ok(sound.beat - beatBeforeResume <= 3, 'No burst of missed beats on resume');
 });
 
 test('pigeons have finite distinct calls and do not coo without enemies', async () => {
